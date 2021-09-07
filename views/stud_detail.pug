@@ -1,0 +1,20 @@
+doctype html
+html
+   head
+        title Hello Student
+   body
+        table(border=2)
+            thead 
+                th Full Name 
+                th Age 
+                th Phone
+                th Weight
+            each val,i in allstud
+                tr
+                    td #{val.name}
+                    td #{val.age}
+                    td #{val.phone}
+                    td #{val.weight}
+        hr
+        a(href="/") Home 
+                    

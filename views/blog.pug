@@ -1,0 +1,21 @@
+doctype html
+html
+   head
+        title My Blog
+        script. 
+            function like(ind)
+            {
+                window.location.href = "/blog/posts/like?index="+ind;
+            }
+   body
+        form(action="/blog/posts", method="post") 
+            textarea(name="blog", cols="30", rows="10")
+            br
+            button Add Blog
+        br
+        each val,i in allblog 
+            div 
+                p #{val.blog}
+                button(onclick='like(value)' value=i) Like 
+                p Like - #{val.like}
+            hr

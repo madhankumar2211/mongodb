@@ -1,0 +1,23 @@
+doctype html
+html
+   head
+        title Hello Student
+   body
+        table(border=2)
+            thead 
+                th Full Name 
+                th View
+                th Delete 
+                th Update 
+            each val,i in allstud
+                tr
+                    td #{val.name}
+                    td 
+                        a(href=`/studentdetails/${val._id}`) Yes
+                    td 
+                        a(href=`/deletestudent/${val._id}`) Yes
+                    td 
+                        a(href=`/studentupdate/${val._id}`) Yes
+                
+        hr
+        a(href="/") Home 

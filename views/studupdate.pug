@@ -1,0 +1,13 @@
+doctype html
+html
+   head
+        title Hello Student
+   body
+        form(action=`/updatestudent/${id}`, method="get") 
+            label(for="weight") Weight 
+            input(type="text" name = 'weight') 
+            label(for="date") Date 
+            input(type="date", name="date")
+            button Update
+        hr
+        a(href="/") Home 
