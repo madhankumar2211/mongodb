@@ -7,10 +7,11 @@
     <title>Register</title>
 </head>
 <body>
-    <form action="/regstudent" method="post">
+    <form action="/addstudent" method="post" enctype="multipart/form-data">
         <input type="text" name='name' placeholder="Enter your Fullname"><br>
         <input type="number" name='age' placeholder="Enter your Age"><br>
         <input type="number" name="phone" placeholder="Enter your phone number"><br>
+        <input type="file" name="profilepic" id="pic">
         <button type="submit">Register</button>
     </form>
     <hr>

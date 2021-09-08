@@ -3,18 +3,27 @@ html
    head
         title Hello Student
    body
-        table(border=2)
-            thead 
-                th Full Name 
-                th Age 
-                th Phone
-                th Weight
-            each val,i in allstud
-                tr
-                    td #{val.name}
-                    td #{val.age}
-                    td #{val.phone}
-                    td #{val.weight}
+        each val in allstud
+            img(src=`/${val.profilepic}` width='200px')
+            br
+            a(href=`/updateprofilepic/${val._id}`) Update Profile Picture 
+            br
+            h2 Name - #{val.name} 
+            h2 Phone - #{val.phone} 
+            h2 Age - #{val.age} 
+        //- table(border=2)
+        //-     thead 
+        //-         th Profile
+        //-         th Full Name 
+        //-         th Age 
+        //-         th Phone
+        //-     each val in allstud
+        //-         tr
+        //-             td 
+        //-                 img(src=`/${val.profilepic}` width='100px')
+        //-             td #{val.name}
+        //-             td #{val.age}
+        //-             td #{val.phone}
         hr
         a(href="/") Home 
                     

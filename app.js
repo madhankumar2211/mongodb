@@ -1,8 +1,26 @@
 const express = require('express');
 const app = express();
+const multer = require('multer');
+var path = require('path');
+
+app.use(express.static(__dirname+'/uploads')); 
 
 const {MongoClient,ObjectId} = require('mongodb');
 const url = 'mongodb://127.0.0.1:27017/';
+
+const storage = multer.diskStorage({
+    destination: (req,file,cb) => {
+        cb(null,__dirname+'/uploads');
+    },
+    filename: (req,file,cb) => {
+        var fileext = path.extname(file.originalname);
+        const uniqueSuffix = Date.now() + '_' +Math.round(Math.random() * 1E9)
+        cb(null,file.fieldname+'_'+uniqueSuffix+fileext)
+    }
+})
+
+const upload = multer({storage: storage});
+
 
 //body parser
 app.use(express.urlencoded({extended:true}));
@@ -36,16 +54,18 @@ app.get('/liststud',(req,res) => {
 });
 
 //Data insert
-app.post('/regstudent',(req,res) => {
+app.post('/addstudent',upload.single('profilepic'),(req,res) => {
+    req.body.profilepic = req.file.filename;
     MongoClient.connect(url,(err,conn) => {
         var db = conn.db('merit');
-        db.collection('student').insertOne(req.body,(err,res) =>{
+        db.collection('student').insertOne(req.body,(err,data) =>{
             if(err){
                 console.log(err);
+            }else{
+                res.send(data);
             }
         });
     });
-    res.send('Registerd');
 });
 
 //search page
@@ -72,6 +92,7 @@ app.get('/studentdetails/:id?',(req,res) => {
     MongoClient.connect(url,(err,conn) => {
         var db = conn.db('merit');
         db.collection('student').find({_id : ObjectId(req.params.id)}).toArray((err,data) =>{
+            console.log(data);
             res.render('stud_detail.pug',{
                 allstud : data
             });
@@ -79,6 +100,35 @@ app.get('/studentdetails/:id?',(req,res) => {
     });
 })
 
+
+//update profile picture template
+app.get('/updateprofilepic/:id?',(req,res) => {
+    console.log(req.body);
+    res.render('profileupdate.pug',{
+        id: req.params.id
+    })
+})
+
+
+//update profile picture in DB
+app.post('/updateprofile/:id?',upload.single('profilepic'),(req,res) => {
+    MongoClient.connect(url,(err,conn) => {
+        var db = conn.db('merit');
+        db.collection('student')
+        .updateOne(
+            {_id : ObjectId(req.params.id)},
+            {$set: {profilepic : req.file.filename}},
+            (err,data) =>{
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    console.log(data);
+                    res.redirect(`/studentdetails/${req.params.id}`);
+                }
+        });
+    });
+})
 
 //delete student
 app.get('/deletestudent/:id?',(req,res) => {
@@ -104,7 +154,7 @@ app.get('/updatestudent/:id?',(req,res) => {
         db.collection('student')
         .updateOne(
             {_id : ObjectId(req.params.id)},
-            {$push: {weightEntry : req.query}},
+            {$push: {BMIEntry : req.query}},
             (err,data) =>{
                 if(err){
                     console.log(err);
@@ -118,6 +168,6 @@ app.get('/updatestudent/:id?',(req,res) => {
 });
 
 
-app.listen(8080,() => {
-    console.log('App running on http://localhost:8080/');
+app.listen(7080,() => {
+    console.log('App running on http://localhost:7080/');
 });
