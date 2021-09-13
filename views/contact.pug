@@ -1,0 +1,29 @@
+doctype html
+html
+   head
+        title Contacts
+        style 
+            include ./style.css
+   body
+        div(class = 'head') 
+            h1 Contacts
+            h1 
+                a(href="/addcontactform") + Add
+        hr
+        div(class = 'group') 
+            a(href="/") All
+            a(href="/family") Family
+            a(href="/friend") Friend
+            a(href="/work") Work
+        hr
+        each val in allcnt 
+            div 
+                div 
+                    a(href=`/profilepic/${val._id}`) 
+                        img(src=`${val.profilepic}` width='80px')
+                    p Name - #{val.name}
+                    p Phone - #{val.phone}
+                div 
+                    a(href=`/deletecontact/${val._id}`) Delete &nbsp;&nbsp;&nbsp;&nbsp;
+                    a(href=`/contactupdate/${val._id}`) Edit 
+            hr

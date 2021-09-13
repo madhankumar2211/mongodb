@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADD</title>
+</head>
+<body>
+    <form action="/addcontact" method="post" enctype="multipart/form-data">
+        <input type="text" name='name' placeholder="Fullname"><br>
+        <input type="number" name="phone" placeholder="phone number"><br>
+        <input type="file" name="profilepic" id="pic"><br>
+        <select name="group">
+            <option selected disabled>Group</option>
+            <option value="">None</option>
+            <option value="friend">Friend</option>
+            <option value="work">Work</option>
+            <option value="family">Family</option>
+        </select><br>
+        <button type="submit">Add</button>
+    </form>
+    <hr>
+    <a href="/">Home</a>
+</body>
+</html>

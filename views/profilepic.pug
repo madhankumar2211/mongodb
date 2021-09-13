@@ -1,0 +1,11 @@
+doctype html
+html
+   head
+        title update
+   body
+        form(action=`/updateimage/${id}` method="post" enctype="multipart/form-data") 
+            label(for="profilepic") 
+            input(type="file" name="profilepic")
+            button Update
+        hr
+        a(href="/") Home 

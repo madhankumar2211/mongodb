@@ -1,0 +1,23 @@
+doctype html
+html
+   head
+        title update
+   body
+        form(action=`/updatecontact/${usr._id}`, method="post") 
+               label(for="name") Name 
+               input(type="text" name = 'name' value =`${usr.name}`) 
+               br
+               label(for="phone") Phone 
+               input(type="text" name = 'phone' value =`${usr.phone}`) 
+               br
+               label(for="group") Group 
+               select(name="group") 
+                    option(selected disabled) Group
+                    option(value="") None
+                    option(value="friend") Friend
+                    option(value="work") Work
+                    option(value="family") Family
+               br
+               button Update
+        hr
+        a(href="/") Home 
