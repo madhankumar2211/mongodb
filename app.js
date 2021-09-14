@@ -24,7 +24,6 @@ app.set('view engine', 'pug'); //view engine
 app.set('views','./views');
 
 app.get('/',(req,res) => {
-    req.session.username = 'madhankumar';
     res.sendFile(__dirname + '/home.html')
 })
 app.get('/aboutus',(req,res) => {
@@ -33,20 +32,79 @@ app.get('/aboutus',(req,res) => {
 })
 
 app.get('/register',(req,res) => {
-    res.sendFile(__dirname + '/userregform.html')
+    if(req.session.username){
+        res.send("Logout before Register")
+    }else{
+        res.sendFile(__dirname + '/userregform.html')
+    }
 })
 
+app.get('/admin',(req,res) => {
+    MongoClient.connect(url,(err,conn) => {
+        var db = conn.db('merit');
+        db.collection('login').find({auth : 0}).toArray((err,data) =>{
+            res.render('authuser.pug',{
+                allusers: data
+            })
+        });
+    });
+})
+
+app.post('/authuser',(req,res) =>{
+    MongoClient.connect(url,(err,conn) => {
+        var db = conn.db('merit');
+        if(Array.isArray(req.body.id))
+        {
+            req.body.id.forEach(e => {
+                db.collection('login')
+                .updateOne(
+                    {_id : ObjectId(e)},
+                    {$set: {auth : 1}},
+                    (err,data) =>{
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            console.log(data);
+                        }
+                    });
+                });
+        }
+        else{
+            db.collection('login')
+            .updateOne(
+                {_id : ObjectId(req.body.id)},
+                {$set: {auth : 1}},
+                (err,data) =>{
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        console.log(data);
+                    }
+                })
+        }
+        
+        });
+    res.redirect('/');
+})
+
+
 app.get('/login',(req,res) => {
+    if(req.session.username){
+        res.send("Already Logged In")
+    }else{
     res.sendFile(__dirname + '/loginform.html')
+    }
 })
 
 // --------auth using middleware function-------
 function ath(req,res,next){
-    if(req.cookies.username){
+    if(req.session.username){
         MongoClient.connect(url,(err,conn) => {
             var db = conn.db('merit');
-            db.collection('login').find({username : req.cookies.username}).toArray((err,data) =>{
-                if(data[0].psw === req.cookies.psw){
+            db.collection('login').find({username : req.session.username}).toArray((err,data) =>{
+                if(data[0].psw === req.session.psw){
                     next()
                 }
                 else{
@@ -79,6 +137,7 @@ app.post('/registeruser',(req,res) => {
             else if(req.body.psw !== req.body.rpsw){
                 res.sendFile(__dirname + '/regpassworderror.html');
             }else{
+                req.body.auth = 0;
                 db.collection('login').insertOne(req.body);
                 res.redirect('/')
             }
@@ -88,16 +147,21 @@ app.post('/registeruser',(req,res) => {
 
 app.post('/loginuser',(req,res) => {
     MongoClient.connect(url,(err,conn) => {
-        var db = conn.db('merit');
-        db.collection('login').find({username: req.body.username}).toArray((err,data) =>{
+            var db = conn.db('merit');
+            db.collection('login').find({username: req.body.username}).toArray((err,data) =>{
             if(data.length === 0){
                 res.sendFile(__dirname + '/errorloginform.html');
             }
             else {
                 if(data[0].psw === req.body.psw){
-                    res.cookie('username',req.body.username);
-                    res.cookie('psw', req.body.psw);
-                    res.redirect('/')
+                    if(data[0].auth){
+                        req.session.username = req.body.username;
+                        req.session.psw = req.body.psw;
+                        res.redirect('/')
+                    }else{
+                        res.send('You are not a verified user')
+                    }
+                    
                 }else{
                     res.send('Incorrect Password');
                 }
@@ -127,8 +191,9 @@ app.post('/loginuser',(req,res) => {
 
 //logout
 app.get('/logout', function(req, res){
-    res.clearCookie('username');
-    res.clearCookie('psw');
+    req.session.destroy();
+    // res.clearCookie('username');
+    // res.clearCookie('psw');
     res.redirect('/login');
  });
 

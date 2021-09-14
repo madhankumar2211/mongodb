@@ -1,0 +1,14 @@
+doctype html
+html
+   head
+        title Auth User
+   body
+        h2 New Requests
+        form(action=`/authuser`, method="post") 
+            each val in allusers 
+                div 
+                    input(type="checkbox",name='id', value=`${val._id}`)
+                    p #{val.username}
+                    p #{val._id}
+                hr
+            button Authenticate
